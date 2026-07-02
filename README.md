@@ -22,42 +22,6 @@ START -> intake -> security_screen --clear--------> triage --auto_approve--> aut
 | `tests/eval/evalsets/basic.evalset.json` | Four eval cases: low-value, high-value, PII-in-memo, prompt-injection. |
 | `.env.example` | Copy to `.env` and add your `GOOGLE_API_KEY` (from Google AI Studio) or configure Vertex AI project/region instead. |
 
-## What I already verified for you (no GCP account needed)
-
-I installed `google-adk==2.3.0` and ran this exact code against the real
-`Workflow`, `Runner`, and `RequestInput` classes — not simulated:
-
-```
-CASE 1 (low value)   -> status: auto_approved
-CASE 2 (high value)  -> paused for human input: True
-                      -> after manager approval -> status: approved
-CASE 3 (prompt injection) -> status: blocked (before any LLM call)
-```
-
-Run it yourself any time with `python smoke_test.py` (no API key required —
-every node on these paths is deterministic Python, no model calls happen).
-
-## What you still need to do locally (needs Antigravity + your GCP project)
-
-I don't have access to Antigravity, `gcloud`, or your Google Cloud
-credentials from here, so these steps are yours to run, following the
-codelab you linked:
-
-1. **Drop this folder in** as your `ambient-expense-agent` project (or let
-   Antigravity's `adk-scaffold` skill regenerate it — the graph/logic will
-   match what's here either way).
-2. `uv sync` / `uv lock` for a deterministic lockfile.
-3. Fill in `.env` with a real `GOOGLE_API_KEY` (or Vertex AI project/region).
-4. `agents-cli playground` — click through the flow interactively, confirm
-   the $100 threshold and the human-in-the-loop pause behave as expected.
-5. `agents-cli eval run` against `tests/eval/` — this is where the
-   LLM-as-judge scoring (Routing Correctness / Security Containment,
-   target 5.0 each per the codelab) actually runs; I can't invoke that
-   without your API access.
-6. Follow the linked codelab from "Generate Agent Runtime scaffolding"
-   onward: `agents-cli deploy` to Agent Runtime, verify in Cloud Trace,
-   check the enterprise Agent Registry.
-
 ## Extending the security screen
 
 `security.py` is intentionally simple (regex-based) so it's fast, free, and
